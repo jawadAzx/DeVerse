@@ -50,14 +50,16 @@ contract Maincontract {
             address,
             string memory,
             string memory,
-            bool
+            bool,
+            address
         )
     {
         return (
             userStructs[_walletId].walletId,
             userStructs[_walletId].userName,
             userStructs[_walletId].password,
-            userStructs[_walletId].isVerified
+            userStructs[_walletId].isVerified,
+            userStructs[_walletId].userContractAddress
         );
     }
 

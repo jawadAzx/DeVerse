@@ -1,3 +1,4 @@
+import React, { useState } from 'react'
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { Typography } from '@mui/material';
@@ -5,7 +6,17 @@ import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
 import Posts from './Posts';
 const Mainpage = () => {
-    
+    const [postInput, setPostInput] = useState("");
+    const handlePost = () => {
+        if (postInput != "") {
+            console.log(postInput);
+            setPostInput("");
+        }
+        else {
+            alert("Please enter something ;)");
+        }
+    };
+
     return (
         <Box sx={{ display: "flex", flexDirection: "column", marginLeft: "250px", width: "100%" }}>
 
@@ -16,6 +27,8 @@ const Mainpage = () => {
             <Box sx={{ marginLeft: "40px", width: "100%", display: "flex", flexDirection: "column" }}>
                 <TextField
                     id="outlined-multiline-static"
+                    value={postInput}
+                    onChange={(e) => setPostInput(e.target.value)}
                     multiline
                     rows={4}
                     variant="standard"
@@ -24,12 +37,14 @@ const Mainpage = () => {
                 />
 
             </Box>
-            <Button sx={{
-                color: "white", fontWeight: "bold", fontSize: "15px", textTransform: "none", marginLeft: "600px", backgroundColor: "green", borderRadius: "20px", width: "130px", '&:hover': {
-                    background: "#FF2E2E",
-                },
-                marginTop: "20px"
-            }}>Post
+            <Button
+                onClick={handlePost}
+                sx={{
+                    color: "white", fontWeight: "bold", fontSize: "15px", textTransform: "none", marginLeft: "600px", backgroundColor: "green", borderRadius: "20px", width: "130px", '&:hover': {
+                        background: "#FF2E2E",
+                    },
+                    marginTop: "20px"
+                }}>Post
             </Button>
             <Divider sx={{ marginLeft: "40px", marginTop: "10px", marginBottom: "20px", backgroundColor: "#2F3336", width: "690px" }} />
 
