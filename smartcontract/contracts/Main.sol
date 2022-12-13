@@ -185,14 +185,12 @@ contract UserContract {
     mapping(uint256 => CommentStruct) public commentStructs;
 
     function createPost(string memory _postContent) public {
-        if (msg.sender == owner) {
-            postStructs[postCounts].postId = postCounts;
-            postStructs[postCounts].postContent = _postContent;
-            postStructs[postCounts].likeCount = 0;
-            postStructs[postCounts].commentCount = 0;
-            postCounts++;
-            emit Post(postCounts, _postContent, 0, 0);
-        }
+        postStructs[postCounts].postId = postCounts;
+        postStructs[postCounts].postContent = _postContent;
+        postStructs[postCounts].likeCount = 0;
+        postStructs[postCounts].commentCount = 0;
+        postCounts++;
+        emit Post(postCounts, _postContent, 0, 0);
     }
 
     function createComment(uint256 _postId, string memory _commentContent)
