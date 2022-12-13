@@ -75,6 +75,74 @@ contract Maincontract {
         userStructs[_walletId].isVerified = true;
         verifiedUserCounts++;
     }
+
+    function makePost(address _walletId, string memory _postContent) public {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        uc.createPost(_postContent);
+    }
+
+    function makeComment(
+        address _walletId,
+        uint256 _postId,
+        string memory _commentContent
+    ) public {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        uc.createComment(_postId, _commentContent);
+    }
+
+    function likePost(address _walletId, uint256 _postId) public {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        uc.likePost(_postId);
+    }
+
+    function getPosts(address _walletId)
+        public
+        view
+        returns (UserContract.PostStruct[] memory)
+    {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        return uc.getPosts();
+    }
+
+    function getComments(address _walletId)
+        public
+        view
+        returns (UserContract.CommentStruct[] memory)
+    {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        return uc.getComments();
+    }
+
+    function getPostCount(address _walletId) public view returns (uint256) {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        return uc.getPostCount();
+    }
+
+    function getCommentCount(address _walletId) public view returns (uint256) {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        return uc.getCommentCount();
+    }
+
+    function getLikeCount(address _walletId) public view returns (uint256) {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        return uc.getLikeCount();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
