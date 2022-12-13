@@ -54,6 +54,15 @@ contract Maincontract {
             address
         )
     {
+        if (userStructs[_walletId].walletId == address(0)) {
+            return (
+                address(0),
+                "account does not exist",
+                "",
+                false,
+                address(0)
+            );
+        }
         return (
             userStructs[_walletId].walletId,
             userStructs[_walletId].userName,

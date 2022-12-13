@@ -1,7 +1,12 @@
-import Box from '@mui/material/Box';
+import React, { useEffect, useState, useContext } from "react";
 import { Typography } from '@mui/material';
 import IndividualPosts from './IndividualPosts';
+import { TransactionContext } from "../context/TransactionContext";
+
 const Posts = () => {
+    const { getPosts, userPosts } =
+        useContext(TransactionContext);
+    const [posts, setPosts] = useState([]);
     const samplePosts = [
         {
             username: "John Doe",
@@ -39,9 +44,16 @@ const Posts = () => {
 
 
     ]
+    useEffect(() => {
+        getPosts().then(res => {
+            setPosts(res)
+        })
+    }, [])
+    console.log("POSTS", userPosts)
+
     return (
         <div>
-            {samplePosts.map((post,index) => (
+            {samplePosts.map((post, index) => (
                 <IndividualPosts key={index} user={post.username} post={post.post} likes={post.likes} comments={post.comments} verified={post.verified} time={post.time} />
             ))}
 

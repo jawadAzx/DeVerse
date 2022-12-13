@@ -7,6 +7,8 @@ import Connect from './components/Connect'
 function App() {
   const { currentAccount, connectWallet } =
     useContext(TransactionContext);
+  // console.log(currentAccount);
+
   return (
     <div className="container">
       <Router>
