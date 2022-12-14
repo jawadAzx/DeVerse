@@ -6,6 +6,7 @@ import { TransactionContext } from '../context/TransactionContext';
 
 const Connect = () => {
     const { connectWallet } = useContext(TransactionContext);
+
     return (
         <Box sx={{
             display: 'flex',

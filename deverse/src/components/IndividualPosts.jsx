@@ -10,6 +10,7 @@ const IndividualPosts = (props) => {
     const breakPost = () => {
         // break post in 99 character part each
         let post = props.post;
+        // console.log("POST", post)
         let postArray = [];
         let postLength = post.length;
         let postPart = "";

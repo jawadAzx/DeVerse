@@ -85,11 +85,20 @@ contract Maincontract {
         verifiedUserCounts++;
     }
 
-    function makePost(address _walletId, string memory _postContent) public {
+    function makePost(
+        address _walletId,
+        string memory _postContent,
+        string memory timeStamp
+    ) public {
         UserContract uc = UserContract(
             userStructs[_walletId].userContractAddress
         );
-        uc.createPost(_postContent);
+        uc.createPost(
+            _postContent,
+            timeStamp,
+            userStructs[_walletId].userName,
+            userStructs[_walletId].isVerified
+        );
     }
 
     function makeComment(
@@ -174,6 +183,9 @@ contract UserContract {
         string postContent;
         uint256 likeCount;
         uint256 commentCount;
+        string timeStamp;
+        string userName;
+        bool isVerified;
     }
     struct CommentStruct {
         uint256 commentId;
@@ -185,7 +197,10 @@ contract UserContract {
         uint256 postId,
         string postContent,
         uint256 likeCount,
-        uint256 commentCount
+        uint256 commentCount,
+        string timeStamp,
+        string userName,
+        bool isVerified
     );
     event Comment(uint256 commentId, string commentContent, uint256 likeCount);
     event Like(uint256 likeCount);
@@ -193,13 +208,30 @@ contract UserContract {
     mapping(uint256 => PostStruct) public postStructs;
     mapping(uint256 => CommentStruct) public commentStructs;
 
-    function createPost(string memory _postContent) public {
+    function createPost(
+        string memory _postContent,
+        string memory timeStamp,
+        string memory userName,
+        bool isVerified
+    ) public {
         postStructs[postCounts].postId = postCounts;
         postStructs[postCounts].postContent = _postContent;
         postStructs[postCounts].likeCount = 0;
         postStructs[postCounts].commentCount = 0;
+        postStructs[postCounts].timeStamp = timeStamp;
+        postStructs[postCounts].userName = userName;
+        postStructs[postCounts].isVerified = isVerified;
+
         postCounts++;
-        emit Post(postCounts, _postContent, 0, 0);
+        emit Post(
+            postCounts,
+            _postContent,
+            0,
+            0,
+            timeStamp,
+            userName,
+            isVerified
+        );
     }
 
     function createComment(uint256 _postId, string memory _commentContent)

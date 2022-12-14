@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from "react";
 import Box from '@mui/material/Box';
 import SidebarLink from './SidebarLink';
 import HomeIcon from '@mui/icons-material/Home';
@@ -9,8 +9,11 @@ import { Button } from '@mui/material';
 import Mainpage from './Mainpage';
 import Trending from './Trending';
 import Notifications from './Notifications';
+import { TransactionContext } from "../context/TransactionContext";
 
 const Sidebar = () => {
+    const { disconnectWallet } =
+        useContext(TransactionContext);
     const [active, setActive] = useState("Home");
     return (
         <span>
@@ -28,7 +31,8 @@ const Sidebar = () => {
                     color: "white", fontWeight: "bold", fontSize: "20px", textTransform: "none", marginLeft: "60px", backgroundColor: "red", borderRadius: "20px", width: "50%", marginTop: "25px", '&:hover': {
                         background: "#FF2E2E",
                     },
-                }}
+                }
+                }
                 >Logout
                 </Button>
 
@@ -38,7 +42,7 @@ const Sidebar = () => {
             }
 
 
-        </span>
+        </span >
 
 
     )

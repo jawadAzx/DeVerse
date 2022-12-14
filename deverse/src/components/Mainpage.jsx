@@ -8,11 +8,13 @@ import Posts from './Posts';
 import { TransactionContext } from "../context/TransactionContext";
 
 const Mainpage = () => {
-    const { makePost, handlePost, post } =
+    const { makePost, handlePost, post, getPosts } =
         useContext(TransactionContext);
-    const handlePostt = () => {
+    const handlePostt = async () => {
         if (post != "") {
-            makePost();
+            await makePost();
+            await getPosts();
+
         }
         else {
             alert("Please enter something ;)");
