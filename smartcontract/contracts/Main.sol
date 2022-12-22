@@ -27,6 +27,7 @@ contract Maincontract {
     );
 
     mapping(address => UserStruct) public userStructs;
+    mapping(string => address) public userNameToWalletId;
 
     function createUser(
         address _walletId,
@@ -40,6 +41,7 @@ contract Maincontract {
         userStructs[_walletId].isVerified = false;
         userStructs[_walletId].userContractAddress = uca;
         userCounts++;
+        userNameToWalletId[_userName] = _walletId;
         emit User(_walletId, uca, _userName, _password, false);
     }
 
@@ -54,6 +56,36 @@ contract Maincontract {
             address
         )
     {
+        if (userStructs[_walletId].walletId == address(0)) {
+            return (
+                address(0),
+                "account does not exist",
+                "",
+                false,
+                address(0)
+            );
+        }
+        return (
+            userStructs[_walletId].walletId,
+            userStructs[_walletId].userName,
+            userStructs[_walletId].password,
+            userStructs[_walletId].isVerified,
+            userStructs[_walletId].userContractAddress
+        );
+    }
+
+    function getUserByUserName(string memory _userName)
+        public
+        view
+        returns (
+            address,
+            string memory,
+            string memory,
+            bool,
+            address
+        )
+    {
+        address _walletId = userNameToWalletId[_userName];
         if (userStructs[_walletId].walletId == address(0)) {
             return (
                 address(0),
@@ -119,6 +151,39 @@ contract Maincontract {
         uc.likePost(_postId);
     }
 
+    function followUser(address _walletId, address _followingId) public {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        uc.followSomeone(_followingId);
+        UserContract ucf = UserContract(
+            userStructs[_followingId].userContractAddress
+        );
+        ucf.updateFollowersCount();
+    }
+
+    function getFollowing(address _walletId)
+        public
+        view
+        returns (address[] memory)
+    {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        return uc.getFollowing();
+    }
+
+    function getFollowersCount(address _walletId)
+        public
+        view
+        returns (uint256)
+    {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        return uc.getFollowersCount();
+    }
+
     function getPosts(address _walletId)
         public
         view
@@ -170,6 +235,8 @@ contract UserContract {
     uint256 commentCounts;
     uint256 likeCounts;
     address owner;
+    uint256 followersCount;
+    address[] following;
 
     constructor(address walletId) {
         owner = walletId;
@@ -248,6 +315,22 @@ contract UserContract {
     function likePost(uint256 _postId) public {
         postStructs[_postId].likeCount++;
         emit Like(postStructs[_postId].likeCount);
+    }
+
+    function followSomeone(address _walletId) public {
+        following.push(_walletId);
+    }
+
+    function updateFollowersCount() public {
+        followersCount++;
+    }
+
+    function getFollowersCount() public view returns (uint256) {
+        return followersCount;
+    }
+
+    function getFollowing() public view returns (address[] memory) {
+        return following;
     }
 
     function getPosts() public view returns (PostStruct[] memory) {
