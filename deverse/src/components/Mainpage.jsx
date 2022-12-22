@@ -8,19 +8,18 @@ import Posts from './Posts';
 import { TransactionContext } from "../context/TransactionContext";
 
 const Mainpage = () => {
-    const { makePost, handlePost, post, getPosts } =
+    const { makePost, handlePost, post, getPosts, currentAccount } =
         useContext(TransactionContext);
     const handlePostt = async () => {
         if (post != "") {
             await makePost();
-            await getPosts();
+            await getPosts(currentAccount);
 
         }
         else {
             alert("Please enter something ;)");
         }
     };
-
     return (
         <Box sx={{ display: "flex", flexDirection: "column", marginLeft: "250px", width: "100%" }}>
 
@@ -52,7 +51,7 @@ const Mainpage = () => {
             </Button>
             <Divider sx={{ marginLeft: "40px", marginTop: "10px", marginBottom: "20px", backgroundColor: "#2F3336", width: "690px" }} />
 
-            <Posts />
+            <Posts account={currentAccount} owner={false} />
 
         </Box>
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { contractABI, contractAddress } from "../utils/constants";
 export const TransactionContext = React.createContext();
@@ -14,9 +14,17 @@ export const TransactionProvider = ({ children }) => {
     const [currentAccount, setCurrentAccount] = useState("");
     const [post, setPost] = useState("");
     const [userPosts, setUserPosts] = useState([]);
-    const [userName, setUserName] = useState("");
+    const [userDetails, setUserDetails] = useState([]);
+    const [userQueryResult, setUserQueryResult] = useState([]);
+    const [query, setQuery] = useState("");
+    const [searchUserDetails, setSearchUserDetails] = useState(currentAccount);
+    const [followers, setFollowers] = useState(0);
+    const [following, setFollowing] = useState([]);
     const handlePost = (e) => {
         setPost(e.target.value)
+    }
+    const handleQuery = (e) => {
+        setQuery(e.target.value)
     }
 
     /////////////////////////////////////////////////////////////////////////////////// 
@@ -53,7 +61,6 @@ export const TransactionProvider = ({ children }) => {
             window.location.reload();
         } catch (error) {
             console.log(error);
-
             throw new Error("No ethereum object");
         }
     };
@@ -81,12 +88,24 @@ export const TransactionProvider = ({ children }) => {
         checkIfWalletIsConnect();
     }
         , []);
+    useEffect(() => {
+        if (currentAccount) {
+            setUser();
+            setSearchUserDetails(currentAccount);
+        }
+    }, [currentAccount]);
+
     /////////////////////////////////////////////////////////////////////////////////// 
 
     const checkUser = async (walletAddress) => {
         const contract = getEthereumContract();
         const user = await contract.getUser(walletAddress);
         return user;
+    }
+    const setUser = async () => {
+        const contract = getEthereumContract();
+        const user = await contract.getUser(currentAccount);
+        setUserDetails(user);
     }
     const makePost = async () => {
         try {
@@ -107,15 +126,14 @@ export const TransactionProvider = ({ children }) => {
             console.log(error);
         }
     }
-    const getPosts = async () => {
+    const getPosts = async (account) => {
         try {
             setUserPosts([]);
             const accounts = await ethereum.request({
                 method: "eth_requestAccounts",
             });
             const contract = getEthereumContract();
-            console.log("Hm,")
-            const posts = await contract.getPosts(accounts[0]);
+            const posts = await contract.getPosts(account);
             // console.log(posts, "POSTS")
             let neww = [];
             for (let i = posts.length - 1; i >= 0; i--) {
@@ -127,14 +145,25 @@ export const TransactionProvider = ({ children }) => {
                 temp.push(posts[i][4]);
                 temp.push(posts[i][5]);
                 temp.push(posts[i][6]);
-
                 neww.push(temp);
             }
             setUserPosts(neww);
         }
         catch (error) {
             setUserPosts([]);
-
+        }
+    }
+    const searchUser = async () => {
+        try {
+            const accounts = await ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            const contract = getEthereumContract();
+            const user = await contract.getUserByUserName(query);
+            setUserQueryResult(user);
+        }
+        catch (error) {
+            console.log(error);
         }
     }
     const likePost = async (postId) => {
@@ -158,6 +187,102 @@ export const TransactionProvider = ({ children }) => {
             console.log(error);
         }
     }
+    const getFollowers = async (account) => {
+        try {
+            const accounts = await ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            const contract = getEthereumContract();
+            const followers = await contract.getFollowersCount(account);
+            let temp = null;
+            temp = Number(followers["_hex"]);
+            setFollowers(temp);
+        }
+
+        catch (error) {
+            console.log(error);
+        }
+    }
+    const getFollowing = async (account) => {
+        try {
+            const accounts = await ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            const contract = getEthereumContract();
+            const following = await contract.getFollowing(account);
+            setFollowing(following);
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    const followUser = async (account, followingAccount) => {
+        try {
+            const accounts = await ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            const contract = getEthereumContract();
+            const following = await contract.followUser(account, followingAccount);
+            // window.location.reload();
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    const getAllposts = async () => {
+        try {
+            let temp = []
+            const accounts = await ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            const contract = getEthereumContract();
+            const myFollowing = await contract.getFollowing(currentAccount);
+
+            // console.log(myFollowing)
+            for (let i = 0; i < myFollowing.length; i++) {
+                const posts = await contract.getPosts(myFollowing[i]);
+                let temp1 = []
+                for (let j = 0; j < posts.length; j++) {
+                    temp1.push(Number(posts[j][0]["_hex"]));
+                    temp1.push(posts[j][1]);
+                    temp1.push(Number(posts[j][2]["_hex"]));
+                    temp1.push(Number(posts[j][3]["_hex"]));
+                    temp1.push(posts[j][4]);
+                    temp1.push(posts[j][5]);
+                    temp1.push(posts[j][6]);
+                }
+                temp.push(temp1);
+            }
+            const posts = await contract.getPosts(currentAccount);
+            console.log(posts, "POSTS")
+            for (let j = 0; j < posts.length; j++) {
+                let temp1 = []
+                temp1.push(Number(posts[j][0]["_hex"]));
+                temp1.push(posts[j][1]);
+                temp1.push(Number(posts[j][2]["_hex"]));
+                temp1.push(Number(posts[j][3]["_hex"]));
+                temp1.push(posts[j][4]);
+                temp1.push(posts[j][5]);
+                temp1.push(posts[j][6]);
+                temp.push(temp1);
+
+            }
+
+            // sort by time
+            temp.sort((a, b) => {
+                return b[4] - a[4];
+            })
+
+            setUserPosts(temp);
+
+
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+
 
     return (
         <TransactionContext.Provider
@@ -172,10 +297,25 @@ export const TransactionProvider = ({ children }) => {
                 userPosts,
                 disconnectWallet,
                 likePost,
+                userDetails,
+                searchUser,
+                userQueryResult,
+                handleQuery,
+                query,
+                searchUserDetails,
+                setSearchUserDetails,
+                setUser,
+                getFollowers,
+                getFollowing,
+                followers,
+                following,
+                followUser,
+                getAllposts
             }}
         >
             {children}
         </TransactionContext.Provider>
     );
 };
+
 
