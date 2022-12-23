@@ -144,11 +144,24 @@ contract Maincontract {
         uc.createComment(_postId, _commentContent);
     }
 
-    function likePost(address _walletId, uint256 _postId) public {
+    function likePost(
+        string memory _userName,
+        uint256 _postId,
+        address _myWalletId
+    ) public {
+        address _walletId = userNameToWalletId[_userName];
         UserContract uc = UserContract(
             userStructs[_walletId].userContractAddress
         );
         uc.likePost(_postId);
+        UserContract ucf = UserContract(
+            userStructs[_myWalletId].userContractAddress
+        );
+        // concat postId and userName
+        // string memory _postIdAndUserName = string(
+        //     abi.encodePacked(_postId, " ", _userName)
+        // );
+        ucf.updateMylikes(_postId, _userName);
     }
 
     function followUser(address _walletId, address _followingId) public {
@@ -226,6 +239,17 @@ contract Maincontract {
         );
         return uc.getLikeCount();
     }
+
+    function getMyLikes(address _walletId)
+        public
+        view
+        returns (UserContract.myLikeStruct[] memory)
+    {
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        return uc.getMyLikes();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -237,6 +261,7 @@ contract UserContract {
     address owner;
     uint256 followersCount;
     address[] following;
+    myLikeStruct[] myLikes;
 
     constructor(address walletId) {
         owner = walletId;
@@ -259,7 +284,10 @@ contract UserContract {
         string commentContent;
         uint256 likeCount;
     }
-
+    struct myLikeStruct {
+        uint256 postId;
+        string userName;
+    }
     event Post(
         uint256 postId,
         string postContent,
@@ -317,6 +345,10 @@ contract UserContract {
         emit Like(postStructs[_postId].likeCount);
     }
 
+    function updateMylikes(uint256 _postId, string memory _userName) public {
+        myLikes.push(myLikeStruct(_postId, _userName));
+    }
+
     function followSomeone(address _walletId) public {
         following.push(_walletId);
     }
@@ -359,5 +391,9 @@ contract UserContract {
 
     function getLikeCount() public view returns (uint256) {
         return likeCounts;
+    }
+
+    function getMyLikes() public view returns (myLikeStruct[] memory) {
+        return myLikes;
     }
 }

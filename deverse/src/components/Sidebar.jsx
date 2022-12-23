@@ -50,8 +50,8 @@ const Sidebar = () => {
                 </Box>
                 <Box sx={{ marginTop: "30px" }}>
                     <SidebarLink icon={HomeIcon} label="Home" onClick={setActive} />
-                    <SidebarLink icon={TagIcon} label="Explore" onClick={setActive} />
-                    <SidebarLink icon={NotificationsIcon} label="Notifications" onClick={setActive} />
+                    {/* <SidebarLink icon={TagIcon} label="Explore" onClick={setActive} />
+                    <SidebarLink icon={NotificationsIcon} label="Notifications" onClick={setActive} /> */}
                     <SidebarLink icon={PersonIcon} label="Profile" onClick={setActive} />
                     <SidebarLink icon={SearchIcon} label="Search" onClick={setActive} />
                 </Box>

@@ -1,11 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
+import { TransactionContext } from "../context/TransactionContext";
+
 const IndividualPosts = (props) => {
+    const { likePost, myLikes } =
+        useContext(TransactionContext);
     const [finalPost, setFinalPost] = useState(null);
     const breakPost = () => {
         // break post in 99 character part each
@@ -31,7 +36,6 @@ const IndividualPosts = (props) => {
     useEffect(() => {
         setFinalPost(breakPost());
     }, [])
-
     return (
         <Box sx={{ flexDirection: "column", display: "flex", alignItems: "flex-start", justifyContent: "flex-start", width: "70%" }}>
             <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", marginLeft: "40px" }}>
@@ -52,10 +56,17 @@ const IndividualPosts = (props) => {
 
             </Box>
             <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", marginLeft: "40px", marginTop: "40px" }}>
-                <FavoriteBorderIcon sx={{ color: "white", marginRight: "10px" }} />
+                {
+                    myLikes.includes(props.postIDOwner) ? <FavoriteIcon sx={{ color: "red", marginRight: "10px", cursor: "pointer" }}
+                    ></FavoriteIcon>
+                        : <FavoriteBorderIcon sx={{ color: "white", marginRight: "10px", cursor: "pointer" }}
+                            onClick={() => { likePost(props.postIDOwner) }}
+                        />
+                }
+
                 <Typography variant="h7" sx={{ color: "white", marginRight: "10px" }}>{props.likes}</Typography>
 
-                <ModeCommentIcon sx={{ color: "white", marginLeft: "10px" }} />
+                <ModeCommentIcon sx={{ color: "white", marginLeft: "10px", cursor: "pointer" }} />
                 <Typography variant="h7" sx={{ color: "white", marginLeft: "10px" }}>{props.comments}</Typography>
 
             </Box>

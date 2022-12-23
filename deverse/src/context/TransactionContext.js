@@ -20,6 +20,8 @@ export const TransactionProvider = ({ children }) => {
     const [searchUserDetails, setSearchUserDetails] = useState(currentAccount);
     const [followers, setFollowers] = useState(0);
     const [following, setFollowing] = useState([]);
+    const [myFollowing, setMyFollowing] = useState([]);
+    const [myLikes, setMyLikes] = useState([]);
     const handlePost = (e) => {
         setPost(e.target.value)
     }
@@ -92,6 +94,8 @@ export const TransactionProvider = ({ children }) => {
         if (currentAccount) {
             setUser();
             setSearchUserDetails(currentAccount);
+            getFollowing(currentAccount);
+            getMyLikes();
         }
     }, [currentAccount]);
 
@@ -171,8 +175,10 @@ export const TransactionProvider = ({ children }) => {
             const accounts = await ethereum.request({
                 method: "eth_requestAccounts",
             });
+            const id = postId.split(" ")[0]
+            const user = postId.split(" ")[1]
             const contract = getEthereumContract();
-            const postt = await contract.likePost(accounts[0], postId);
+            const postt = await contract.likePost(user, id, currentAccount);
             let neww = [];
             for (let i = 0; i < userPosts.length; i++) {
                 if (userPosts[i][0] == postId) {
@@ -181,6 +187,25 @@ export const TransactionProvider = ({ children }) => {
                 neww.push(userPosts[i]);
             }
             setUserPosts(neww);
+        }
+
+        catch (error) {
+            console.log(error);
+        }
+    }
+    const getMyLikes = async () => {
+        try {
+            const accounts = await ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            const contract = getEthereumContract();
+            const likes = await contract.getMyLikes(currentAccount);
+            let newLikes = [];
+            for (let i = 0; i < likes.length; i++) {
+                let temp = Number(likes[i][0]["_hex"]) + " " + likes[i][1];
+                newLikes.push(temp);
+            }
+            setMyLikes(newLikes);
         }
 
         catch (error) {
@@ -211,6 +236,10 @@ export const TransactionProvider = ({ children }) => {
             const contract = getEthereumContract();
             const following = await contract.getFollowing(account);
             setFollowing(following);
+            if (account == currentAccount) {
+                setMyFollowing(following);
+            }
+
         }
         catch (error) {
             console.log(error);
@@ -254,7 +283,6 @@ export const TransactionProvider = ({ children }) => {
                 temp.push(temp1);
             }
             const posts = await contract.getPosts(currentAccount);
-            console.log(posts, "POSTS")
             for (let j = 0; j < posts.length; j++) {
                 let temp1 = []
                 temp1.push(Number(posts[j][0]["_hex"]));
@@ -310,7 +338,9 @@ export const TransactionProvider = ({ children }) => {
                 followers,
                 following,
                 followUser,
-                getAllposts
+                getAllposts,
+                myFollowing,
+                myLikes,
             }}
         >
             {children}

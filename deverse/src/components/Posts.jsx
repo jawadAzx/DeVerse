@@ -56,10 +56,11 @@ const Posts = (props) => {
 
         )
     }
+    // console.log(userPosts)
     return (
         <div>
             {userPosts.map((post, index) => (
-                <IndividualPosts key={index} user={post[5]} post={post[1]} likes={post[2]} comments={post[3]} verified={post[6]} time={changeTime(post[4]).toString()} />
+                <IndividualPosts key={post[0] + post[5]} user={post[5]} post={post[1]} likes={post[2]} comments={post[3]} verified={post[6]} time={changeTime(post[4]).toString()} postIDOwner={post[0] + " " + post[5]} />
             ))}
 
         </div>

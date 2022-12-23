@@ -9,7 +9,7 @@ import Posts from './Posts';
 
 const Profilepage = (props) => {
     const { userDetails, currentAccount, getFollowers,
-        getFollowing, followers, following, followUser } =
+        getFollowing, followers, following, followUser, myFollowing } =
         useContext(TransactionContext);
     const [userData, setUserData] = useState([]);
     const [acc, setAcc] = useState("");
@@ -36,7 +36,6 @@ const Profilepage = (props) => {
             getFollowing(acc);
         }
     }, [acc])
-
     return (
         <Box sx={{ display: "flex", flexDirection: "column", marginLeft: "250px", width: "100%" }}>
             <Box sx={{ display: "flex", flexDirection: "row", marginLeft: "40px", marginTop: "30px" }}>
@@ -47,14 +46,16 @@ const Profilepage = (props) => {
                 <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>Name: {userData[1]}</Typography>
                 {
                     props.owner == true ? null :
-                        <Button sx={{
-                            color: "white", fontWeight: "bold", fontSize: "15px", textTransform: "none", marginLeft: "430px", backgroundColor: "green", borderRadius: "20px", width: "130px", '&:hover': {
-                                background: "#FF2E2E",
-                            },
-                        }}
-                            onClick={() => followUser(currentAccount, acc)}
-                        >Follow
-                        </Button>
+                        myFollowing.includes(acc) ?
+                            null :
+                            <Button sx={{
+                                color: "white", fontWeight: "bold", fontSize: "15px", textTransform: "none", marginLeft: "430px", backgroundColor: "green", borderRadius: "20px", width: "130px", '&:hover': {
+                                    background: "#FF2E2E",
+                                },
+                            }}
+                                onClick={() => followUser(currentAccount, acc)}
+                            >Follow
+                            </Button>
                 }
             </Box>
             <Box sx={{ marginLeft: "40px", width: "100%", display: "flex", flexDirection: "row" }}>
