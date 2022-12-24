@@ -43,7 +43,7 @@ const Mainpage = () => {
             <Button
                 onClick={handlePostt}
                 sx={{
-                    color: "white", fontWeight: "bold", fontSize: "15px", textTransform: "none", marginLeft: "600px", backgroundColor: "green", borderRadius: "20px", width: "130px", '&:hover': {
+                    color: "white", fontWeight: "bold", fontSize: "15px", textTransform: "none", marginLeft: "600px", backgroundColor: "#365b6d", borderRadius: "20px", width: "130px", '&:hover': {
                         background: "#FF2E2E",
                     },
                     marginTop: "20px"

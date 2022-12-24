@@ -45,8 +45,8 @@ const Sidebar = () => {
     return (
         <span>
             <Box sx={{ width: 250, height: "100%", flex: "column", position: "fixed" }}>
-                <Box sx={{ marginLeft: "40px", marginTop: "30px" }}>
-                    <img src={require('./logo.png')} alt="Deverse" width={40} height={40} />
+                <Box sx={{ marginLeft: "60px", marginTop: "30px" }}>
+                    <img src={require('./logo.png')} alt="Deverse" width={125} height={125} />
                 </Box>
                 <Box sx={{ marginTop: "30px" }}>
                     <SidebarLink icon={HomeIcon} label="Home" onClick={setActive} />
