@@ -31,7 +31,10 @@ const IndividualPosts = (props) => {
         }
         postArray.push(postPart);
         return postArray;
-
+    }
+    const commentHandler = () => {
+        props.commentsHelper()
+        props.postIdFunction(props.postIDOwner)
     }
     useEffect(() => {
         setFinalPost(breakPost());
@@ -55,22 +58,27 @@ const IndividualPosts = (props) => {
                 }
 
             </Box>
-            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", marginLeft: "40px", marginTop: "40px" }}>
-                {
-                    myLikes.includes(props.postIDOwner) ? <FavoriteIcon sx={{ color: "red", marginRight: "10px", cursor: "pointer" }}
-                    ></FavoriteIcon>
-                        : <FavoriteBorderIcon sx={{ color: "white", marginRight: "10px", cursor: "pointer" }}
-                            onClick={() => { likePost(props.postIDOwner) }}
+            {
+                props.commentStatus ? null :
+
+                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", marginLeft: "40px", marginTop: "40px" }}>
+                        {
+                            myLikes.includes(props.postIDOwner) ? <FavoriteIcon sx={{ color: "red", marginRight: "10px", cursor: "pointer" }}
+                            ></FavoriteIcon>
+                                : <FavoriteBorderIcon sx={{ color: "white", marginRight: "10px", cursor: "pointer" }}
+                                    onClick={() => { likePost(props.postIDOwner) }}
+                                />
+                        }
+
+                        <Typography variant="h7" sx={{ color: "white", marginRight: "10px" }}>{props.likes}</Typography>
+
+                        <ModeCommentIcon sx={{ color: "white", marginLeft: "10px", cursor: "pointer" }}
+                            onClick={commentHandler}
                         />
-                }
+                        <Typography variant="h7" sx={{ color: "white", marginLeft: "10px" }}>{props.comments}</Typography>
 
-                <Typography variant="h7" sx={{ color: "white", marginRight: "10px" }}>{props.likes}</Typography>
-
-                <ModeCommentIcon sx={{ color: "white", marginLeft: "10px", cursor: "pointer" }} />
-                <Typography variant="h7" sx={{ color: "white", marginLeft: "10px" }}>{props.comments}</Typography>
-
-            </Box>
-
+                    </Box>
+            }
             <Divider sx={{ marginLeft: "40px", marginTop: "10px", marginBottom: "20px", backgroundColor: "#2F3336", width: "690px" }} />
 
         </Box>

@@ -6,12 +6,14 @@ import TagIcon from '@mui/icons-material/Tag';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PersonIcon from '@mui/icons-material/Person';
 import SearchIcon from '@mui/icons-material/Search';
+import PeopleIcon from '@mui/icons-material/People';
 import { Button } from '@mui/material';
 import Mainpage from './Mainpage';
 import Trending from './Trending';
 import Notifications from './Notifications';
 import Profilepage from "./Profilepage";
 import SearchUser from "./SearchUser";
+import Comments from "./Comments";
 import { TransactionContext } from "../context/TransactionContext";
 
 const Sidebar = () => {
@@ -34,6 +36,9 @@ const Sidebar = () => {
             setSearchUserDetails(currentAccount);
         }
     }
+    const commentsTime = () => {
+        setActive("Comments");
+    }
     useEffect(() => {
         if (active != "ProfileSearch") {
             setProfileOwner(true);
@@ -52,6 +57,7 @@ const Sidebar = () => {
                     <SidebarLink icon={HomeIcon} label="Home" onClick={setActive} />
                     {/* <SidebarLink icon={TagIcon} label="Explore" onClick={setActive} />
                     <SidebarLink icon={NotificationsIcon} label="Notifications" onClick={setActive} /> */}
+                    <SidebarLink icon={PeopleIcon} label="Following" onClick={setActive} />
                     <SidebarLink icon={PersonIcon} label="Profile" onClick={setActive} />
                     <SidebarLink icon={SearchIcon} label="Search" onClick={setActive} />
                 </Box>
@@ -61,16 +67,18 @@ const Sidebar = () => {
                     },
                 }
                 }
+                    onClick={disconnectWallet}
                 >Logout
                 </Button>
-
             </Box>
             {
-                active == "Home" ? <Mainpage /> : active == "Explore" ? <Trending /> : active == "Notifications" ? <Notifications /> : active == "Profile" ? <Profilepage owner={profileOwner} search={viaSearch} user={userQueryResult} /> : active == "Search" ? <SearchUser helper={handleProfileChanges} /> : active == "ProfileSearch" ? <Profilepage owner={profileOwner} search={viaSearch} user={userQueryResult} /> : null
+                active == "Explore" ? <Trending /> : active == "Notifications" ? <Notifications /> : active == "Profile" ? <Profilepage owner={profileOwner} search={viaSearch} user={userQueryResult} /> : active == "Search" ? <SearchUser helper={handleProfileChanges} /> : active == "ProfileSearch" ? <Profilepage owner={profileOwner} search={viaSearch} user={userQueryResult} /> : active == "Home" ?
+                    <Mainpage commentsHelper={commentsTime} following={false} comments={false} /> : active == "Comments" ?
+                        <Mainpage commentsHelper={commentsTime} following={false} comments={true} /> : active == "Following" ?
+                            <Mainpage commentsHelper={commentsTime} following={true} comments={false} /> : null
+
             }
         </span >
-
-
     )
 }
 
