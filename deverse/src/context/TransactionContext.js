@@ -22,13 +22,25 @@ export const TransactionProvider = ({ children }) => {
     const [following, setFollowing] = useState([]);
     const [myFollowing, setMyFollowing] = useState([]);
     const [myLikes, setMyLikes] = useState([]);
+    const [comment, setComment] = useState("");
+    const [comments, setComments] = useState([]);
+    const [letMeIn, setLetMeIn] = useState(false);
+    const [signUpUserName, setSignUpUserName] = useState("");
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
     const handlePost = (e) => {
         setPost(e.target.value)
     }
     const handleQuery = (e) => {
         setQuery(e.target.value)
     }
-
+    const handleComment = (e) => {
+        setComment(e.target.value)
+    }
+    const handleSignUpUserName = (e) => {
+        setSignUpUserName(e.target.value)
+    }
     /////////////////////////////////////////////////////////////////////////////////// 
     const checkIfWalletIsConnect = async () => {
         try {
@@ -37,6 +49,7 @@ export const TransactionProvider = ({ children }) => {
             const accounts = await ethereum.request({ method: "eth_accounts" });
             if (accounts.length) {
                 setCurrentAccount(accounts[0]);
+                setLetMeIn(true);
 
             } else {
                 console.log("No accounts found");
@@ -57,9 +70,29 @@ export const TransactionProvider = ({ children }) => {
             const transactionContract = getEthereumContract()
             const user = await transactionContract.getUser(walletAddress);
             if (user[1] == "account does not exist") {
-                let userName = await prompt("Enter your username");
-                await transactionContract.createUser(walletAddress, userName, "dummy password");
+                handleOpen();
+                // await transactionContract.createUser(walletAddress, userName, "dummy password");
             }
+            else {
+                setCurrentAccount(walletAddress);
+                setLetMeIn(true);
+                window.location.reload();
+
+            }
+        } catch (error) {
+            console.log(error);
+            throw new Error("No ethereum object");
+        }
+    };
+    const signUp = async () => {
+        try {
+            if (!ethereum) return alert("Please install MetaMask.");
+            const walletAddress = currentAccount;
+            const transactionContract = getEthereumContract()
+            await transactionContract.createUser(walletAddress, signUpUserName, "dummy password");
+            setLetMeIn(true);
+            handleClose();
+
             window.location.reload();
         } catch (error) {
             console.log(error);
@@ -73,12 +106,9 @@ export const TransactionProvider = ({ children }) => {
             // disconnect wallet
             await ethereum.request({
                 method: "wallet_requestPermissions",
-                params: [
-                    {
-                        eth_accounts: {},
-                    },
-                ],
+                params: [{ eth_accounts: {} }],
             });
+
             setCurrentAccount("");
             window.location.reload();
         } catch (error) {
@@ -130,6 +160,58 @@ export const TransactionProvider = ({ children }) => {
             console.log(error);
         }
     }
+    const makeComment = async (postId) => {
+        try {
+            const accounts = await ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            const timestamp = Math.floor(Date.now() / 1000);
+            const timestampString = timestamp.toString();
+            const postIdSplit = postId.split(" ");
+            const postIde = postIdSplit[0];
+            const postOwner = postIdSplit[1];
+            const commentString = postIdSplit[0] + "-cmt-" + comment + "-cmt-" + userDetails[1] + "-cmt-" + timestampString;
+            const contract = getEthereumContract();
+            console.log(commentString, postOwner, postIde)
+            const postt = await contract.makeComment(commentString, postOwner, postIde);
+            setComment("");
+
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    const getComments = async (postId) => {
+        try {
+            const accounts = await ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            setComments([]);
+            const postIdSplit = postId.split(" ");
+            const postIde = postIdSplit[0];
+            const postOwner = postIdSplit[1];
+            const contract = getEthereumContract();
+            const comments = await contract.getComments(postOwner);
+            for (let i = 0; i < comments.length; i++) {
+                let temp = comments[i].split("-cmt-");
+                if (temp[0] == postIde) {
+                    let comment = temp[1];
+                    let commenter = temp[2];
+                    let commentTime = temp[3];
+                    let commentObject = {
+                        comment: comment,
+                        commenter: commenter,
+                        commentTime: commentTime
+                    }
+                    setComments(comments => [...comments, commentObject]);
+                }
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
     const getPosts = async (account) => {
         try {
             setUserPosts([]);
@@ -157,6 +239,77 @@ export const TransactionProvider = ({ children }) => {
             setUserPosts([]);
         }
     }
+    const getFollowingsPosts = async () => {
+        try {
+            let temp = []
+            const accounts = await ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            const contract = getEthereumContract();
+            const myFollowing = await contract.getFollowing(currentAccount);
+
+            // console.log(myFollowing)
+            for (let i = 0; i < myFollowing.length; i++) {
+                const posts = await contract.getPosts(myFollowing[i]);
+                let temp1 = []
+                for (let j = 0; j < posts.length; j++) {
+                    temp1.push(Number(posts[j][0]["_hex"]));
+                    temp1.push(posts[j][1]);
+                    temp1.push(Number(posts[j][2]["_hex"]));
+                    temp1.push(Number(posts[j][3]["_hex"]));
+                    temp1.push(posts[j][4]);
+                    temp1.push(posts[j][5]);
+                    temp1.push(posts[j][6]);
+                }
+                temp.push(temp1);
+            }
+            temp.sort((a, b) => {
+                return b[4] - a[4];
+            })
+            setUserPosts(temp);
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    const getAllPosts = async () => {
+        try {
+            let temp = []
+            const accounts = await ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            const contract = getEthereumContract();
+            const allUsers = await contract.getAllUsersAddress();
+            // console.log(allUsers)
+            for (let i = 0; i < allUsers.length; i++) {
+                const posts = await contract.getPosts(allUsers[i]);
+                if (posts.length == 0) {
+                    continue;
+                }
+                let temp1 = []
+                for (let j = 0; j < posts.length; j++) {
+                    temp1.push(Number(posts[j][0]["_hex"]));
+                    temp1.push(posts[j][1]);
+                    temp1.push(Number(posts[j][2]["_hex"]));
+                    temp1.push(Number(posts[j][3]["_hex"]));
+                    temp1.push(posts[j][4]);
+                    temp1.push(posts[j][5]);
+                    temp1.push(posts[j][6]);
+                }
+                temp.push(temp1);
+            }
+            temp.sort((a, b) => {
+                return b[4] - a[4];
+            })
+            setUserPosts(temp);
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+
+
     const searchUser = async () => {
         try {
             const accounts = await ethereum.request({
@@ -258,59 +411,6 @@ export const TransactionProvider = ({ children }) => {
             console.log(error);
         }
     }
-    const getAllposts = async () => {
-        try {
-            let temp = []
-            const accounts = await ethereum.request({
-                method: "eth_requestAccounts",
-            });
-            const contract = getEthereumContract();
-            const myFollowing = await contract.getFollowing(currentAccount);
-
-            // console.log(myFollowing)
-            for (let i = 0; i < myFollowing.length; i++) {
-                const posts = await contract.getPosts(myFollowing[i]);
-                let temp1 = []
-                for (let j = 0; j < posts.length; j++) {
-                    temp1.push(Number(posts[j][0]["_hex"]));
-                    temp1.push(posts[j][1]);
-                    temp1.push(Number(posts[j][2]["_hex"]));
-                    temp1.push(Number(posts[j][3]["_hex"]));
-                    temp1.push(posts[j][4]);
-                    temp1.push(posts[j][5]);
-                    temp1.push(posts[j][6]);
-                }
-                temp.push(temp1);
-            }
-            const posts = await contract.getPosts(currentAccount);
-            for (let j = 0; j < posts.length; j++) {
-                let temp1 = []
-                temp1.push(Number(posts[j][0]["_hex"]));
-                temp1.push(posts[j][1]);
-                temp1.push(Number(posts[j][2]["_hex"]));
-                temp1.push(Number(posts[j][3]["_hex"]));
-                temp1.push(posts[j][4]);
-                temp1.push(posts[j][5]);
-                temp1.push(posts[j][6]);
-                temp.push(temp1);
-
-            }
-
-            // sort by time
-            temp.sort((a, b) => {
-                return b[4] - a[4];
-            })
-
-            setUserPosts(temp);
-
-
-        }
-        catch (error) {
-            console.log(error);
-        }
-    }
-
-
 
     return (
         <TransactionContext.Provider
@@ -338,9 +438,24 @@ export const TransactionProvider = ({ children }) => {
                 followers,
                 following,
                 followUser,
-                getAllposts,
+                getFollowingsPosts,
                 myFollowing,
                 myLikes,
+                makeComment,
+                comment,
+                handleComment,
+                comments,
+                setComments,
+                getComments,
+                setUserPosts,
+                getAllPosts,
+                open,
+                handleOpen,
+                handleClose,
+                letMeIn,
+                signUpUserName,
+                handleSignUpUserName,
+                signUp
             }}
         >
             {children}

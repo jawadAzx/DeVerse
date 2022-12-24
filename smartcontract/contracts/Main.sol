@@ -17,6 +17,15 @@ contract Maincontract {
         string password;
         bool isVerified;
     }
+    struct PostStruct {
+        uint256 postId;
+        string postContent;
+        uint256 likeCount;
+        uint256 commentCount;
+        string timeStamp;
+        string userName;
+        bool isVerified;
+    }
 
     event User(
         address walletId,
@@ -25,9 +34,19 @@ contract Maincontract {
         string password,
         bool isVerified
     );
+    event Post(
+        uint256 postId,
+        string postContent,
+        uint256 likeCount,
+        uint256 commentCount,
+        string timeStamp,
+        string userName,
+        bool isVerified
+    );
 
     mapping(address => UserStruct) public userStructs;
     mapping(string => address) public userNameToWalletId;
+    address[] public numberToWalletId;
 
     function createUser(
         address _walletId,
@@ -42,6 +61,7 @@ contract Maincontract {
         userStructs[_walletId].userContractAddress = uca;
         userCounts++;
         userNameToWalletId[_userName] = _walletId;
+        numberToWalletId.push(_walletId);
         emit User(_walletId, uca, _userName, _password, false);
     }
 
@@ -134,14 +154,27 @@ contract Maincontract {
     }
 
     function makeComment(
-        address _walletId,
-        uint256 _postId,
-        string memory _commentContent
+        string memory _comment,
+        string memory _postOwner,
+        uint256 _postId
     ) public {
+        address _walletId = userNameToWalletId[_postOwner];
         UserContract uc = UserContract(
             userStructs[_walletId].userContractAddress
         );
-        uc.createComment(_postId, _commentContent);
+        uc.createComment(_comment, _postId);
+    }
+
+    function getComments(string memory _postOwner)
+        public
+        view
+        returns (string[] memory)
+    {
+        address _walletId = userNameToWalletId[_postOwner];
+        UserContract uc = UserContract(
+            userStructs[_walletId].userContractAddress
+        );
+        return uc.getComments();
     }
 
     function likePost(
@@ -208,15 +241,8 @@ contract Maincontract {
         return uc.getPosts();
     }
 
-    function getComments(address _walletId)
-        public
-        view
-        returns (UserContract.CommentStruct[] memory)
-    {
-        UserContract uc = UserContract(
-            userStructs[_walletId].userContractAddress
-        );
-        return uc.getComments();
+    function getAllUsersAddress() public view returns (address[] memory) {
+        return numberToWalletId;
     }
 
     function getPostCount(address _walletId) public view returns (uint256) {
@@ -262,6 +288,7 @@ contract UserContract {
     uint256 followersCount;
     address[] following;
     myLikeStruct[] myLikes;
+    string[] comments;
 
     constructor(address walletId) {
         owner = walletId;
@@ -279,11 +306,11 @@ contract UserContract {
         string userName;
         bool isVerified;
     }
-    struct CommentStruct {
-        uint256 commentId;
-        string commentContent;
-        uint256 likeCount;
-    }
+    // struct CommentStruct {
+    //     uint256 commentId;
+    //     string commentContent;
+    //     uint256 likeCount;
+    // }
     struct myLikeStruct {
         uint256 postId;
         string userName;
@@ -297,11 +324,12 @@ contract UserContract {
         string userName,
         bool isVerified
     );
-    event Comment(uint256 commentId, string commentContent, uint256 likeCount);
+    // event Comment(uint256 commentId, string commentContent, uint256 likeCount);
     event Like(uint256 likeCount);
 
     mapping(uint256 => PostStruct) public postStructs;
-    mapping(uint256 => CommentStruct) public commentStructs;
+
+    // mapping(uint256 => CommentStruct) public commentStructs;
 
     function createPost(
         string memory _postContent,
@@ -329,15 +357,15 @@ contract UserContract {
         );
     }
 
-    function createComment(uint256 _postId, string memory _commentContent)
+    function createComment(string memory _commentContent, uint256 _postId)
         public
     {
-        commentStructs[commentCounts].commentId = commentCounts;
-        commentStructs[commentCounts].commentContent = _commentContent;
-        commentStructs[commentCounts].likeCount = 0;
+        comments.push(_commentContent);
         postStructs[_postId].commentCount++;
-        commentCounts++;
-        emit Comment(commentCounts, _commentContent, 0);
+    }
+
+    function getComments() public view returns (string[] memory) {
+        return comments;
     }
 
     function likePost(uint256 _postId) public {
@@ -371,14 +399,6 @@ contract UserContract {
             posts[i] = postStructs[i];
         }
         return posts;
-    }
-
-    function getComments() public view returns (CommentStruct[] memory) {
-        CommentStruct[] memory comments = new CommentStruct[](commentCounts);
-        for (uint256 i = 0; i < commentCounts; i++) {
-            comments[i] = commentStructs[i];
-        }
-        return comments;
     }
 
     function getPostCount() public view returns (uint256) {

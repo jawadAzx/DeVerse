@@ -6,7 +6,7 @@ import Sidebar from './components/Sidebar'
 import Connect from './components/Connect'
 import Profilepage from './components/Profilepage'
 function App() {
-  const { currentAccount, connectWallet } =
+  const { currentAccount, connectWallet, letMeIn } =
     useContext(TransactionContext);
   // console.log(currentAccount);
 
@@ -14,7 +14,7 @@ function App() {
     <div className="container">
       <Router>
         <Routes>
-          {currentAccount ? (
+          {letMeIn ? (
             <Route path="/" element={<Sidebar />} />
           ) : (
 
