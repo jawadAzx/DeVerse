@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import Box from '@mui/material/Box';
 import SidebarLink from './SidebarLink';
 import HomeIcon from '@mui/icons-material/Home';
-import TagIcon from '@mui/icons-material/Tag';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PersonIcon from '@mui/icons-material/Person';
 import SearchIcon from '@mui/icons-material/Search';
@@ -55,9 +55,9 @@ const Sidebar = () => {
                 </Box>
                 <Box sx={{ marginTop: "30px" }}>
                     <SidebarLink icon={HomeIcon} label="Home" onClick={setActive} />
-                    {/* <SidebarLink icon={TagIcon} label="Explore" onClick={setActive} />
-                    <SidebarLink icon={NotificationsIcon} label="Notifications" onClick={setActive} /> */}
                     <SidebarLink icon={PeopleIcon} label="Following" onClick={setActive} />
+                    <SidebarLink icon={TrendingUpIcon} label="Trending" onClick={setActive} />
+                    {/* <SidebarLink icon={NotificationsIcon} label="Notifications" onClick={setActive} /> */}
                     <SidebarLink icon={PersonIcon} label="Profile" onClick={setActive} />
                     <SidebarLink icon={SearchIcon} label="Search" onClick={setActive} />
                 </Box>
@@ -72,10 +72,10 @@ const Sidebar = () => {
                 </Button>
             </Box>
             {
-                active == "Explore" ? <Trending /> : active == "Notifications" ? <Notifications /> : active == "Profile" ? <Profilepage owner={profileOwner} search={viaSearch} user={userQueryResult} /> : active == "Search" ? <SearchUser helper={handleProfileChanges} /> : active == "ProfileSearch" ? <Profilepage owner={profileOwner} search={viaSearch} user={userQueryResult} /> : active == "Home" ?
+                active == "Explore" ? <Trending /> : active == "Notifications" ? <Notifications /> : active == "Profile" ? <Profilepage owner={profileOwner} search={viaSearch} user={userQueryResult} commentsHelper={commentsTime} /> : active == "Search" ? <SearchUser helper={handleProfileChanges} /> : active == "ProfileSearch" ? <Profilepage owner={profileOwner} search={viaSearch} user={userQueryResult} commentsHelper={commentsTime} /> : active == "Home" ?
                     <Mainpage commentsHelper={commentsTime} following={false} comments={false} /> : active == "Comments" ?
                         <Mainpage commentsHelper={commentsTime} following={false} comments={true} /> : active == "Following" ?
-                            <Mainpage commentsHelper={commentsTime} following={true} comments={false} /> : null
+                            <Mainpage commentsHelper={commentsTime} following={true} comments={false} /> : active == "Trending" ? <Mainpage commentsHelper={commentsTime} following={false} comments={false} trending={true} /> : null
 
             }
         </span >

@@ -2,31 +2,33 @@ import React, { useEffect, useState, useContext } from "react";
 import { Typography } from '@mui/material';
 import IndividualPosts from './IndividualPosts';
 import { TransactionContext } from "../context/TransactionContext";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 const Posts = (props) => {
-    const { getPosts, userPosts, currentAccount, getFollowingsPosts, setUserPosts, comments, } =
+    const { getPosts, userPosts, currentAccount, getFollowingsPosts, setUserPosts, comments, getAllPosts } =
         useContext(TransactionContext);
     const [fetched, setFetched] = useState(false);
     const [showComments, setShowComments] = useState(false);
-    // console.log(props.whatToShow, fetched)
-
+    const [showLoad, setShowLoad] = useState(true);
     useEffect(() => {
         if (fetched == false) {
             if (props.account == currentAccount && props.owner == false && props.whatToShow == "following") {
-                // console.log("Notfdsafad")
                 setUserPosts([])
                 getFollowingsPosts()
             }
             else if (props.account == currentAccount && props.owner == false && props.whatToShow == "home") {
-                // getPosts(currentAccount)
                 setUserPosts([])
-                console.log("Not implemented yet")
+                getAllPosts()
+                // console.log("Called", props.whatToShow)
+            }
+            else if (props.account == currentAccount && props.owner == false && props.whatToShow == "trending") {
+                setUserPosts([])
+                getAllPosts()
+                // console.log("Called", props.whatToShow)
             }
             else if (props.account == currentAccount && props.owner == false && props.whatToShow == "comments") {
-                // getPosts(currentAccount)
                 setUserPosts([])
-                console.log(comments)
-                // console.log("Not implemented yet")
             }
             else {
                 setUserPosts([])
@@ -68,17 +70,18 @@ const Posts = (props) => {
         return `${Math.floor(diffInHours / 24 / 7 / 4 / 12)} years ago`
 
     }
-    if (userPosts[0] === undefined && props.whatToShow == "following" || props.whatToShow == "home") {
+
+    if (userPosts[0] === undefined && comments[0] === undefined) {
         return (
             <div>
                 <Typography variant="h4" sx={{ fontWeight: "bold", color: "white", textAlign: "center", marginTop: "20px" }}>
-                    No Posts Yet
+                    Nothing to show :/
                 </Typography>
             </div>
 
         )
     }
-    if (props.whatToShow == "following" || props.whatToShow == "home") {
+    else if (props.whatToShow == "following" || props.whatToShow == "home" || Object.keys(props).length === 2) {
         return (
             <div>
 
@@ -91,6 +94,23 @@ const Posts = (props) => {
 
             </div>
 
+        )
+    }
+    else if (props.whatToShow == "trending") {
+        return (
+            <div>
+                {
+                    // select top 10 posts with most likes and are at most 1 day old
+                    userPosts.sort((a, b) => b[2] - a[2]).slice(0, 10).map((post, index) => (
+                        <IndividualPosts key={post[0] + post[5]} user={post[5]} post={post[1]} likes={post[2]} comments={post[3]} verified={post[6]} time={changeTime(post[4]).toString()} postIDOwner={post[0] + " " + post[5]}
+                            commentsHelper={props.commentsHelper} commentStatus={props.comments}
+                            postIdFunction={props.postIdFunction}
+                        />
+                    ))
+
+
+                }
+            </div>
         )
     }
     else if (props.whatToShow == "comments" && showComments) {

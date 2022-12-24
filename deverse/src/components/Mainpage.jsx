@@ -34,7 +34,7 @@ const Mainpage = (props) => {
     }
     useEffect(() => {
         if (props.comments) {
-            console.log("Called")
+            // console.log("Called")
             getComments(postoComment);
         }
     }, [props.comments])
@@ -44,12 +44,12 @@ const Mainpage = (props) => {
 
             <Box sx={{ display: "flex", flexDirection: "row", marginLeft: "40px", marginTop: "30px" }}>
                 <Typography variant="h4" sx={{ fontWeight: "bold", color: "white" }}>
-                    {props.following ? "Following" : props.comments ? "Comments" : "Home"}
+                    {props.following ? "Following" : props.comments ? "Comments" : props.trending ? "Trending" : "Home"}
                 </Typography>
             </Box>
             <Divider sx={{ marginLeft: "40px", marginTop: "20px", marginBottom: "20px", backgroundColor: "#2F3336", width: "690px" }} />
             {
-                !props.following ?
+                !props.following && !props.trending ?
                     <Box >
                         <Box sx={{ marginLeft: "40px", width: "100%", display: "flex", flexDirection: "column" }}>
                             <TextField
@@ -82,8 +82,10 @@ const Mainpage = (props) => {
 
             }
             <Posts account={currentAccount} owner={false} commentsHelper={props.commentsHelper} comments={props.comments} postIdFunction={handleCommentPostId} whatToShow={
-                props.following ? "following" : props.comments ? "comments" : "home"
-            } />
+                props.following ? "following" : props.comments ? "comments" : props.trending ? "trending" : "home"
+            }
+                trending={props.trending}
+            />
 
         </Box>
 

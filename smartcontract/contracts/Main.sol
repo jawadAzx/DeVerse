@@ -17,6 +17,15 @@ contract Maincontract {
         string password;
         bool isVerified;
     }
+    struct PostStruct {
+        uint256 postId;
+        string postContent;
+        uint256 likeCount;
+        uint256 commentCount;
+        string timeStamp;
+        string userName;
+        bool isVerified;
+    }
 
     event User(
         address walletId,
@@ -25,9 +34,19 @@ contract Maincontract {
         string password,
         bool isVerified
     );
+    event Post(
+        uint256 postId,
+        string postContent,
+        uint256 likeCount,
+        uint256 commentCount,
+        string timeStamp,
+        string userName,
+        bool isVerified
+    );
 
     mapping(address => UserStruct) public userStructs;
     mapping(string => address) public userNameToWalletId;
+    address[] public numberToWalletId;
 
     function createUser(
         address _walletId,
@@ -42,6 +61,7 @@ contract Maincontract {
         userStructs[_walletId].userContractAddress = uca;
         userCounts++;
         userNameToWalletId[_userName] = _walletId;
+        numberToWalletId.push(_walletId);
         emit User(_walletId, uca, _userName, _password, false);
     }
 
@@ -219,6 +239,10 @@ contract Maincontract {
             userStructs[_walletId].userContractAddress
         );
         return uc.getPosts();
+    }
+
+    function getAllUsersAddress() public view returns (address[] memory) {
+        return numberToWalletId;
     }
 
     function getPostCount(address _walletId) public view returns (uint256) {

@@ -24,6 +24,11 @@ export const TransactionProvider = ({ children }) => {
     const [myLikes, setMyLikes] = useState([]);
     const [comment, setComment] = useState("");
     const [comments, setComments] = useState([]);
+    const [letMeIn, setLetMeIn] = useState(false);
+    const [signUpUserName, setSignUpUserName] = useState("");
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
     const handlePost = (e) => {
         setPost(e.target.value)
     }
@@ -33,6 +38,9 @@ export const TransactionProvider = ({ children }) => {
     const handleComment = (e) => {
         setComment(e.target.value)
     }
+    const handleSignUpUserName = (e) => {
+        setSignUpUserName(e.target.value)
+    }
     /////////////////////////////////////////////////////////////////////////////////// 
     const checkIfWalletIsConnect = async () => {
         try {
@@ -41,6 +49,7 @@ export const TransactionProvider = ({ children }) => {
             const accounts = await ethereum.request({ method: "eth_accounts" });
             if (accounts.length) {
                 setCurrentAccount(accounts[0]);
+                setLetMeIn(true);
 
             } else {
                 console.log("No accounts found");
@@ -61,9 +70,29 @@ export const TransactionProvider = ({ children }) => {
             const transactionContract = getEthereumContract()
             const user = await transactionContract.getUser(walletAddress);
             if (user[1] == "account does not exist") {
-                let userName = await prompt("Enter your username");
-                await transactionContract.createUser(walletAddress, userName, "dummy password");
+                handleOpen();
+                // await transactionContract.createUser(walletAddress, userName, "dummy password");
             }
+            else {
+                setCurrentAccount(walletAddress);
+                setLetMeIn(true);
+                window.location.reload();
+
+            }
+        } catch (error) {
+            console.log(error);
+            throw new Error("No ethereum object");
+        }
+    };
+    const signUp = async () => {
+        try {
+            if (!ethereum) return alert("Please install MetaMask.");
+            const walletAddress = currentAccount;
+            const transactionContract = getEthereumContract()
+            await transactionContract.createUser(walletAddress, signUpUserName, "dummy password");
+            setLetMeIn(true);
+            handleClose();
+
             window.location.reload();
         } catch (error) {
             console.log(error);
@@ -234,19 +263,6 @@ export const TransactionProvider = ({ children }) => {
                 }
                 temp.push(temp1);
             }
-            // const posts = await contract.getPosts(currentAccount);
-            // for (let j = 0; j < posts.length; j++) {
-            //     let temp1 = []
-            //     temp1.push(Number(posts[j][0]["_hex"]));
-            //     temp1.push(posts[j][1]);
-            //     temp1.push(Number(posts[j][2]["_hex"]));
-            //     temp1.push(Number(posts[j][3]["_hex"]));
-            //     temp1.push(posts[j][4]);
-            //     temp1.push(posts[j][5]);
-            //     temp1.push(posts[j][6]);
-            //     temp.push(temp1);
-
-            // }
             temp.sort((a, b) => {
                 return b[4] - a[4];
             })
@@ -256,6 +272,42 @@ export const TransactionProvider = ({ children }) => {
             console.log(error);
         }
     }
+    const getAllPosts = async () => {
+        try {
+            let temp = []
+            const accounts = await ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            const contract = getEthereumContract();
+            const allUsers = await contract.getAllUsersAddress();
+            // console.log(allUsers)
+            for (let i = 0; i < allUsers.length; i++) {
+                const posts = await contract.getPosts(allUsers[i]);
+                if (posts.length == 0) {
+                    continue;
+                }
+                let temp1 = []
+                for (let j = 0; j < posts.length; j++) {
+                    temp1.push(Number(posts[j][0]["_hex"]));
+                    temp1.push(posts[j][1]);
+                    temp1.push(Number(posts[j][2]["_hex"]));
+                    temp1.push(Number(posts[j][3]["_hex"]));
+                    temp1.push(posts[j][4]);
+                    temp1.push(posts[j][5]);
+                    temp1.push(posts[j][6]);
+                }
+                temp.push(temp1);
+            }
+            temp.sort((a, b) => {
+                return b[4] - a[4];
+            })
+            setUserPosts(temp);
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
 
 
     const searchUser = async () => {
@@ -395,7 +447,15 @@ export const TransactionProvider = ({ children }) => {
                 comments,
                 setComments,
                 getComments,
-                setUserPosts
+                setUserPosts,
+                getAllPosts,
+                open,
+                handleOpen,
+                handleClose,
+                letMeIn,
+                signUpUserName,
+                handleSignUpUserName,
+                signUp
             }}
         >
             {children}
