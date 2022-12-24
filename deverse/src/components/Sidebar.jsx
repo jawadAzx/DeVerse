@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import SidebarLink from './SidebarLink';
 import HomeIcon from '@mui/icons-material/Home';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import PersonIcon from '@mui/icons-material/Person';
 import SearchIcon from '@mui/icons-material/Search';
 import PeopleIcon from '@mui/icons-material/People';
@@ -13,7 +12,6 @@ import Trending from './Trending';
 import Notifications from './Notifications';
 import Profilepage from "./Profilepage";
 import SearchUser from "./SearchUser";
-import Comments from "./Comments";
 import { TransactionContext } from "../context/TransactionContext";
 
 const Sidebar = () => {
@@ -50,8 +48,8 @@ const Sidebar = () => {
     return (
         <span>
             <Box sx={{ width: 250, height: "100%", flex: "column", position: "fixed" }}>
-                <Box sx={{ marginLeft: "40px", marginTop: "30px" }}>
-                    <img src={require('./logo.png')} alt="Deverse" width={40} height={40} />
+                <Box sx={{ marginLeft: "60px", marginTop: "30px" }}>
+                    <img src={require('./logo.png')} alt="Deverse" width={125} height={125} />
                 </Box>
                 <Box sx={{ marginTop: "30px" }}>
                     <SidebarLink icon={HomeIcon} label="Home" onClick={setActive} />

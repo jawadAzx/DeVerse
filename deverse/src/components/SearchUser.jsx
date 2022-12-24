@@ -32,8 +32,8 @@ const SearchUser = (props) => {
                     sx={{ color: "white", '& .MuiInputBase-input': { color: "white" }, '& .MuiInputLabel-root': { color: "white" }, '& .MuiInputLabel-root.Mui-focused': { color: "white" }, '& .MuiOutlinedInput-notchedOutline': { borderColor: "white" }, '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: "white" }, '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: "white" } }}
                 />
                 <Button sx={{
-                    color: "white", fontWeight: "bold", fontSize: "15px", textTransform: "none", marginLeft: "40px", backgroundColor: "green", borderRadius: "20px", width: "130px", '&:hover': {
-                        background: "#FF2E2E",
+                    color: "white", fontWeight: "bold", fontSize: "15px", textTransform: "none", marginLeft: "40px", backgroundColor: "#365b6d", borderRadius: "20px", width: "130px", '&:hover': {
+                        background: "#6ca2bd",
                     },
                 }}
                     onClick={searchUser}

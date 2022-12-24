@@ -63,7 +63,7 @@ const Profilepage = (props) => {
                 <Typography variant="h7" sx={{ fontWeight: "bold", color: "white", marginLeft: "100px" }}>Following: {following.length}</Typography>
             </Box>
             <Box sx={{ marginLeft: "40px", width: "100%", display: "flex", flexDirection: "row", marginTop: "10px" }}>
-                <Typography variant="h7" sx={{ fontWeight: "bold", color: "white" }}>Token Count: 100</Typography>
+                {/* <Typography variant="h7" sx={{ fontWeight: "bold", color: "white" }}>Token Count: 100</Typography> */}
             </Box>
             <Divider sx={{ marginLeft: "40px", marginTop: "20px", marginBottom: "20px", backgroundColor: "#2F3336", width: "690px" }} />
             <Box sx={{ marginLeft: "40px", width: "100%", display: "flex", flexDirection: "row" }}>
