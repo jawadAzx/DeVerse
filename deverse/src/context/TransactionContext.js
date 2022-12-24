@@ -76,7 +76,7 @@ export const TransactionProvider = ({ children }) => {
             else {
                 setCurrentAccount(walletAddress);
                 setLetMeIn(true);
-                window.location.reload();
+                // window.location.reload();
 
             }
         } catch (error) {
@@ -93,7 +93,7 @@ export const TransactionProvider = ({ children }) => {
             setLetMeIn(true);
             handleClose();
 
-            window.location.reload();
+            // window.location.reload();
         } catch (error) {
             console.log(error);
             throw new Error("No ethereum object");
@@ -104,13 +104,15 @@ export const TransactionProvider = ({ children }) => {
         try {
             if (!ethereum) return alert("Please install MetaMask.");
             // disconnect wallet
-            await ethereum.request({
-                method: "wallet_requestPermissions",
-                params: [{ eth_accounts: {} }],
-            });
-
+            // await ethereum.request({
+            //     // method: "wallet_requestPermissions",
+            //     // method which will be used to disconnect the wallet
+            //     method: "wallet_requestPermissions",
+            //     params: [{ eth_accounts: {} }],
+            // });
             setCurrentAccount("");
-            window.location.reload();
+            setLetMeIn(false);
+            // window.location.reload();
         } catch (error) {
             console.log(error);
         }
@@ -172,7 +174,6 @@ export const TransactionProvider = ({ children }) => {
             const postOwner = postIdSplit[1];
             const commentString = postIdSplit[0] + "-cmt-" + comment + "-cmt-" + userDetails[1] + "-cmt-" + timestampString;
             const contract = getEthereumContract();
-            console.log(commentString, postOwner, postIde)
             const postt = await contract.makeComment(commentString, postOwner, postIde);
             setComment("");
 
@@ -280,23 +281,26 @@ export const TransactionProvider = ({ children }) => {
             });
             const contract = getEthereumContract();
             const allUsers = await contract.getAllUsersAddress();
-            // console.log(allUsers)
             for (let i = 0; i < allUsers.length; i++) {
                 const posts = await contract.getPosts(allUsers[i]);
+                // console.log(posts)
                 if (posts.length == 0) {
                     continue;
                 }
-                let temp1 = []
                 for (let j = 0; j < posts.length; j++) {
-                    temp1.push(Number(posts[j][0]["_hex"]));
-                    temp1.push(posts[j][1]);
-                    temp1.push(Number(posts[j][2]["_hex"]));
-                    temp1.push(Number(posts[j][3]["_hex"]));
-                    temp1.push(posts[j][4]);
-                    temp1.push(posts[j][5]);
-                    temp1.push(posts[j][6]);
+                    let temp1 = []
+                    for (let k = 0; k < posts[j].length; k++) {
+                        temp1.push(Number(posts[j][0]["_hex"]));
+                        temp1.push(posts[j][1]);
+                        temp1.push(Number(posts[j][2]["_hex"]));
+                        temp1.push(Number(posts[j][3]["_hex"]));
+                        temp1.push(posts[j][4]);
+                        temp1.push(posts[j][5]);
+                        temp1.push(posts[j][6]);
+                    }
+                    temp.push(temp1);
                 }
-                temp.push(temp1);
+
             }
             temp.sort((a, b) => {
                 return b[4] - a[4];
@@ -332,14 +336,16 @@ export const TransactionProvider = ({ children }) => {
             const user = postId.split(" ")[1]
             const contract = getEthereumContract();
             const postt = await contract.likePost(user, id, currentAccount);
-            let neww = [];
-            for (let i = 0; i < userPosts.length; i++) {
-                if (userPosts[i][0] == postId) {
-                    userPosts[i][3] += 1;
-                }
-                neww.push(userPosts[i]);
-            }
-            setUserPosts(neww);
+            // let neww = [];
+            // for (let i = 0; i < userPosts.length; i++) {
+            //     if (userPosts[i][0] == postId) {
+            //         userPosts[i][3] += 1;
+            //     }
+            //     neww.push(userPosts[i]);
+            // }
+            await getAllPosts();
+            await getMyLikes();
+            // setUserPosts(neww);
         }
 
         catch (error) {

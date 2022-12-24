@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import SidebarLink from './SidebarLink';
 import HomeIcon from '@mui/icons-material/Home';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import PersonIcon from '@mui/icons-material/Person';
 import SearchIcon from '@mui/icons-material/Search';
 import PeopleIcon from '@mui/icons-material/People';
@@ -13,7 +12,6 @@ import Trending from './Trending';
 import Notifications from './Notifications';
 import Profilepage from "./Profilepage";
 import SearchUser from "./SearchUser";
-import Comments from "./Comments";
 import { TransactionContext } from "../context/TransactionContext";
 
 const Sidebar = () => {

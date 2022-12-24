@@ -8,13 +8,13 @@ import Posts from './Posts';
 import { TransactionContext } from "../context/TransactionContext";
 
 const Mainpage = (props) => {
-    const { makePost, handlePost, post, getPosts, currentAccount, makeComment, comment, handleComment, getComments } =
+    const { makePost, handlePost, post, getPosts, currentAccount, makeComment, comment, handleComment, getComments, getAllPosts } =
         useContext(TransactionContext);
     const [postoComment, setPostoComment] = useState("");
     const handlePostt = async () => {
         if (post != "") {
             await makePost();
-            await getPosts(currentAccount);
+            await getAllPosts()
 
         }
         else {
@@ -24,6 +24,7 @@ const Mainpage = (props) => {
     const handleCommentt = async () => {
         if (comment != "") {
             await makeComment(postoComment);
+            await getComments(postoComment);
         }
         else {
             alert("Please enter something ;)");
@@ -67,8 +68,8 @@ const Mainpage = (props) => {
                         <Button
                             onClick={props.comments ? handleCommentt : handlePostt}
                             sx={{
-                                color: "white", fontWeight: "bold", fontSize: "15px", textTransform: "none", marginLeft: "600px", backgroundColor: "green", borderRadius: "20px", width: "130px", '&:hover': {
-                                    background: "#FF2E2E",
+                                color: "white", fontWeight: "bold", fontSize: "15px", textTransform: "none", marginLeft: "600px", backgroundColor: "#365b6d", borderRadius: "20px", width: "130px", '&:hover': {
+                                    background: "#6ca2bd",
                                 },
                                 marginTop: "20px"
                             }}>

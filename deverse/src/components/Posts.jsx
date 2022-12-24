@@ -70,7 +70,6 @@ const Posts = (props) => {
         return `${Math.floor(diffInHours / 24 / 7 / 4 / 12)} years ago`
 
     }
-
     if (userPosts[0] === undefined && comments[0] === undefined) {
         return (
             <div>
