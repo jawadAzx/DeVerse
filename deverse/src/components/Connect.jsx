@@ -40,9 +40,12 @@ const Connect = () => {
         }}>
             <Typography variant="h2" sx={{}}>DE-Verse</Typography>
             <Typography variant="h4" sx={{ marginBottom: '1rem' }}>Connect Wallet to get started</Typography>
-            <Typography variant="h6" sx={{ marginBottom: '1rem', textAlign: "center" }}>Note: It takes on average 10 seconds to process a transaction, please be patient, and refresh the page if you don't see the changes after 10 seconds.
-            </Typography>
             <Button variant="contained" onClick={connectWallet}>Connect</Button>
+            <Typography variant="h6">Note: Please use the Goerli Test Network</Typography>
+            <Typography variant="h6">It takes on average 10 seconds to process a transaction,</Typography>
+            <Typography variant="h6">Please be patient, and refresh the page if you don't see the changes after 10 seconds.</Typography>
+
+
             <Modal
                 aria-labelledby="transition-modal-title"
                 aria-describedby="transition-modal-description"
