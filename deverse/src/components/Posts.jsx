@@ -45,7 +45,7 @@ const Posts = (props) => {
             setShowComments(false)
         }
     }, [comments])
-
+    console.log(userPosts)
     const changeTime = (epoch) => {
         // change to relative time
         const time = new Date(epoch * 1000)

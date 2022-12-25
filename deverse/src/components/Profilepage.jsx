@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
 import { TransactionContext } from "../context/TransactionContext";
 import Posts from './Posts';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 
 const Profilepage = (props) => {
     const { userDetails, currentAccount, getFollowers,
@@ -44,6 +45,11 @@ const Profilepage = (props) => {
             <Divider sx={{ marginLeft: "40px", marginTop: "20px", marginBottom: "20px", backgroundColor: "#2F3336", width: "690px" }} />
             <Box sx={{ marginLeft: "40px", width: "100%", display: "flex", flexDirection: "row" }}>
                 <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>Name: {userData[1]}</Typography>
+                {userData[3] == true ?
+                    <VerifiedUserIcon sx={{ color: "green", marginLeft: "10px", marginTop: "5px" }} />
+                    :
+                    null}
+
                 {
                     props.owner == true ? null :
                         myFollowing.includes(acc) ?

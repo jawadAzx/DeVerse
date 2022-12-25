@@ -16,6 +16,7 @@ contract Maincontract {
         string userName;
         string password;
         bool isVerified;
+        uint256 creationBlock;
     }
     struct PostStruct {
         uint256 postId;
@@ -60,6 +61,7 @@ contract Maincontract {
         userStructs[_walletId].password = _password;
         userStructs[_walletId].isVerified = false;
         userStructs[_walletId].userContractAddress = uca;
+        userStructs[_walletId].creationBlock = block.number;
         userCounts++;
         userNameToWalletId[_userName] = _walletId;
         userNames.push(_userName);
@@ -69,6 +71,18 @@ contract Maincontract {
 
     function getAllUserNames() public view returns (string[] memory) {
         return userNames;
+    }
+
+    function checkAndVerifyUser() public {
+        for (uint256 i = 0; i < numberToWalletId.length; i++) {
+            if (
+                userStructs[numberToWalletId[i]].creationBlock + 5 <
+                block.number
+            ) {
+                userStructs[numberToWalletId[i]].isVerified = true;
+                verifiedUserCounts++;
+            }
+        }
     }
 
     function getUser(address _walletId)
@@ -138,11 +152,6 @@ contract Maincontract {
         return verifiedUserCounts;
     }
 
-    function verifyUser(address _walletId) public {
-        userStructs[_walletId].isVerified = true;
-        verifiedUserCounts++;
-    }
-
     function makePost(
         address _walletId,
         string memory _postContent,
@@ -157,6 +166,8 @@ contract Maincontract {
             userStructs[_walletId].userName,
             userStructs[_walletId].isVerified
         );
+
+        checkAndVerifyUser();
     }
 
     function makeComment(
@@ -169,6 +180,8 @@ contract Maincontract {
             userStructs[_walletId].userContractAddress
         );
         uc.createComment(_comment, _postId);
+
+        checkAndVerifyUser();
     }
 
     function getComments(string memory _postOwner)
@@ -196,11 +209,9 @@ contract Maincontract {
         UserContract ucf = UserContract(
             userStructs[_myWalletId].userContractAddress
         );
-        // concat postId and userName
-        // string memory _postIdAndUserName = string(
-        //     abi.encodePacked(_postId, " ", _userName)
-        // );
         ucf.updateMylikes(_postId, _userName);
+
+        checkAndVerifyUser();
     }
 
     function followUser(address _walletId, address _followingId) public {
@@ -212,6 +223,8 @@ contract Maincontract {
             userStructs[_followingId].userContractAddress
         );
         ucf.updateFollowersCount();
+
+        checkAndVerifyUser();
     }
 
     function getFollowing(address _walletId)

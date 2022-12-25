@@ -184,6 +184,7 @@ export const TransactionProvider = ({ children }) => {
             const commentString = postIdSplit[0] + "-cmt-" + comment + "-cmt-" + userDetails[1] + "-cmt-" + timestampString;
             const contract = getEthereumContract();
             const postt = await contract.makeComment(commentString, postOwner, postIde);
+            // get transaction hash
             setComment("");
 
         }
@@ -257,12 +258,13 @@ export const TransactionProvider = ({ children }) => {
             });
             const contract = getEthereumContract();
             const myFollowing = await contract.getFollowing(currentAccount);
-
-            // console.log(myFollowing)
             for (let i = 0; i < myFollowing.length; i++) {
                 const posts = await contract.getPosts(myFollowing[i]);
-                let temp1 = []
+                if (posts.length == 0) {
+                    continue;
+                }
                 for (let j = 0; j < posts.length; j++) {
+                    let temp1 = []
                     temp1.push(Number(posts[j][0]["_hex"]));
                     temp1.push(posts[j][1]);
                     temp1.push(Number(posts[j][2]["_hex"]));
@@ -270,12 +272,10 @@ export const TransactionProvider = ({ children }) => {
                     temp1.push(posts[j][4]);
                     temp1.push(posts[j][5]);
                     temp1.push(posts[j][6]);
+                    temp.push(temp1);
                 }
-                temp.push(temp1);
             }
-            temp.sort((a, b) => {
-                return b[4] - a[4];
-            })
+            temp.sort((a, b) => b[4] - a[4]);
             setUserPosts(temp);
         }
         catch (error) {
@@ -288,6 +288,7 @@ export const TransactionProvider = ({ children }) => {
             const accounts = await ethereum.request({
                 method: "eth_requestAccounts",
             });
+            setUserPosts([]);
             const contract = getEthereumContract();
             const allUsers = await contract.getAllUsersAddress();
             for (let i = 0; i < allUsers.length; i++) {
@@ -298,16 +299,15 @@ export const TransactionProvider = ({ children }) => {
                 }
                 for (let j = 0; j < posts.length; j++) {
                     let temp1 = []
-                    for (let k = 0; k < posts[j].length; k++) {
-                        temp1.push(Number(posts[j][0]["_hex"]));
-                        temp1.push(posts[j][1]);
-                        temp1.push(Number(posts[j][2]["_hex"]));
-                        temp1.push(Number(posts[j][3]["_hex"]));
-                        temp1.push(posts[j][4]);
-                        temp1.push(posts[j][5]);
-                        temp1.push(posts[j][6]);
-                    }
+                    temp1.push(Number(posts[j][0]["_hex"]));
+                    temp1.push(posts[j][1]);
+                    temp1.push(Number(posts[j][2]["_hex"]));
+                    temp1.push(Number(posts[j][3]["_hex"]));
+                    temp1.push(posts[j][4]);
+                    temp1.push(posts[j][5]);
+                    temp1.push(posts[j][6]);
                     temp.push(temp1);
+
                 }
 
             }

@@ -15,7 +15,6 @@ const Mainpage = (props) => {
         if (post != "") {
             await makePost();
             await getAllPosts()
-
         }
         else {
             alert("Please enter something ;)");
