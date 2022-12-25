@@ -99,7 +99,7 @@ const Posts = (props) => {
         return (
             <div>
                 {
-                    // select top 10 posts with most likes and are at most 1 day old
+                    // select top 10 posts with most likes and are at most 1 week old
                     userPosts.sort((a, b) => b[2] - a[2]).slice(0, 10).map((post, index) => (
                         <IndividualPosts key={post[0] + post[5]} user={post[5]} post={post[1]} likes={post[2]} comments={post[3]} verified={post[6]} time={changeTime(post[4]).toString()} postIDOwner={post[0] + " " + post[5]}
                             commentsHelper={props.commentsHelper} commentStatus={props.comments}
