@@ -55,6 +55,25 @@ contract Maincontract {
         string memory _userName,
         string memory _password
     ) public {
+        require(
+            userStructs[_walletId].walletId == address(0),
+            "user already exists"
+        );
+        require(
+            userNameToWalletId[_userName] == address(0),
+            "user already exists"
+        );
+        for (uint256 i = 0; i < numberToWalletId.length; i++) {
+            require(numberToWalletId[i] != _walletId, "user already exists");
+        }
+        for (uint256 i = 0; i < userNames.length; i++) {
+            require(
+                keccak256(abi.encodePacked(userNames[i])) !=
+                    keccak256(abi.encodePacked(_userName)),
+                "user already exists"
+            );
+        }
+
         address uca = address(new UserContract(_walletId));
         userStructs[_walletId].walletId = _walletId;
         userStructs[_walletId].userName = _userName;
@@ -62,10 +81,11 @@ contract Maincontract {
         userStructs[_walletId].isVerified = false;
         userStructs[_walletId].userContractAddress = uca;
         userStructs[_walletId].creationBlock = block.number;
-        userCounts++;
         userNameToWalletId[_userName] = _walletId;
         userNames.push(_userName);
         numberToWalletId.push(_walletId);
+        userCounts++;
+
         emit User(_walletId, uca, _userName, _password, false);
     }
 
@@ -76,7 +96,7 @@ contract Maincontract {
     function checkAndVerifyUser() public {
         for (uint256 i = 0; i < numberToWalletId.length; i++) {
             if (
-                userStructs[numberToWalletId[i]].creationBlock + 5 <
+                userStructs[numberToWalletId[i]].creationBlock + 100 <
                 block.number
             ) {
                 userStructs[numberToWalletId[i]].isVerified = true;
@@ -264,13 +284,6 @@ contract Maincontract {
         return numberToWalletId;
     }
 
-    function getPostCount(address _walletId) public view returns (uint256) {
-        UserContract uc = UserContract(
-            userStructs[_walletId].userContractAddress
-        );
-        return uc.getPostCount();
-    }
-
     function getCommentCount(address _walletId) public view returns (uint256) {
         UserContract uc = UserContract(
             userStructs[_walletId].userContractAddress
@@ -325,11 +338,7 @@ contract UserContract {
         string userName;
         bool isVerified;
     }
-    // struct CommentStruct {
-    //     uint256 commentId;
-    //     string commentContent;
-    //     uint256 likeCount;
-    // }
+
     struct myLikeStruct {
         uint256 postId;
         string userName;
@@ -343,12 +352,9 @@ contract UserContract {
         string userName,
         bool isVerified
     );
-    // event Comment(uint256 commentId, string commentContent, uint256 likeCount);
     event Like(uint256 likeCount);
 
     mapping(uint256 => PostStruct) public postStructs;
-
-    // mapping(uint256 => CommentStruct) public commentStructs;
 
     function createPost(
         string memory _postContent,
@@ -418,10 +424,6 @@ contract UserContract {
             posts[i] = postStructs[i];
         }
         return posts;
-    }
-
-    function getPostCount() public view returns (uint256) {
-        return postCounts;
     }
 
     function getCommentCount() public view returns (uint256) {
