@@ -41,9 +41,9 @@ const Connect = () => {
             <Typography variant="h2" sx={{}}>DE-Verse</Typography>
             <Typography variant="h4" sx={{ marginBottom: '1rem' }}>Connect Wallet to get started</Typography>
             <Button variant="contained" onClick={connectWallet}>Connect</Button>
-            <Typography variant="h6">Note: Please use the Goerli Test Network</Typography>
-            <Typography variant="h6">It takes on average 10 seconds to process a transaction,</Typography>
-            <Typography variant="h6">Please be patient, and refresh the page if you don't see the changes after 10 seconds.</Typography>
+            <Typography variant="h7" sx={{marginTop:"1rem"}}>Note: Please use the Goerli Test Network</Typography>
+            <Typography variant="h7">It takes on average 10 seconds to process a transaction,</Typography>
+            <Typography variant="h7">Please be patient, and refresh the page if you don't see the changes after 10 seconds.</Typography>
 
 
             <Modal
