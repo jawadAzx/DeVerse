@@ -89,11 +89,20 @@ export const TransactionProvider = ({ children }) => {
             if (!ethereum) return alert("Please install MetaMask.");
             const walletAddress = currentAccount;
             const transactionContract = getEthereumContract()
-            await transactionContract.createUser(walletAddress, signUpUserName, "dummy password");
-            setLetMeIn(true);
-            handleClose();
+            const userNames = await transactionContract.getAllUserNames();
+            // if usernames doesnt include 
 
-            // window.location.reload();
+            if (!userNames.includes(signUpUserName)) {
+                await transactionContract.createUser(walletAddress, signUpUserName, "dummy password");
+                setLetMeIn(true);
+                handleClose();
+                window.location.reload();
+            }
+            else {
+                alert("username already exists, please choose another one");
+            }
+
+
         } catch (error) {
             console.log(error);
             throw new Error("No ethereum object");

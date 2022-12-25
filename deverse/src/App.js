@@ -6,7 +6,7 @@ import Sidebar from './components/Sidebar'
 import Connect from './components/Connect'
 import Profilepage from './components/Profilepage'
 function App() {
-  const { currentAccount, connectWallet, letMeIn } =
+  const { currentAccount, connectWallet, letMeIn, userDetails } =
     useContext(TransactionContext);
   // console.log(currentAccount);
 
@@ -14,7 +14,7 @@ function App() {
     <div className="container">
       <Router>
         <Routes>
-          {letMeIn ? (
+          {letMeIn && userDetails[1] != "account does not exist" ? (
             <Route path="/" element={<Sidebar />} />
           ) : (
 

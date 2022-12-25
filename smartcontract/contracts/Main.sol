@@ -47,6 +47,7 @@ contract Maincontract {
     mapping(address => UserStruct) public userStructs;
     mapping(string => address) public userNameToWalletId;
     address[] public numberToWalletId;
+    string[] public userNames;
 
     function createUser(
         address _walletId,
@@ -61,8 +62,13 @@ contract Maincontract {
         userStructs[_walletId].userContractAddress = uca;
         userCounts++;
         userNameToWalletId[_userName] = _walletId;
+        userNames.push(_userName);
         numberToWalletId.push(_walletId);
         emit User(_walletId, uca, _userName, _password, false);
+    }
+
+    function getAllUserNames() public view returns (string[] memory) {
+        return userNames;
     }
 
     function getUser(address _walletId)
